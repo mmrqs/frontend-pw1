@@ -45,6 +45,9 @@
         <div id="editorResolv" class="exercise-editor-ace-editor"></div>
         <br/>
         <h2>Sortie console : </h2>
+             <v-alert type="info" v-if="stdout">
+                <p>{{ stdout }}</p>
+              </v-alert>
       </v-col>
 
       <v-col sm="6" cols="12">
@@ -94,7 +97,8 @@ export default {
     instructions: '',
     lang: 'Python',
     difficulty: 5,
-    todos: []
+    todos: [],
+    stdout: ''
   }),
   mounted () {
     this.editor = ace.edit('editorResolv')
@@ -116,11 +120,15 @@ export default {
           creation_date: new Date(),
           title: this.title,
           instructions: this.instructions,
-          tests: this.testsCode,
-          lang: this.language,
-          difficulty: this.difficulty
+          tests: this.editorT.getValue(),
+          solution: this.editorS.getValue(),
+          lang: this.lang,
+          difficulty: this.difficulty,
+          score: 5,
+          template_regions_rw: [0],
+          template_regions: ['panda']
         })
-        console.log({ response })
+        console.log(response)
       } catch (error) {
         console.log(error)
       }
@@ -132,7 +140,7 @@ export default {
           tests: this.editorT.getValue(),
           solution: this.editorS.getValue()
         })
-
+        this.stdout = resultR.data.stdout
         this.todos = resultR.data.result.tests.map(item => {
           if (item.failure) {
             return {
